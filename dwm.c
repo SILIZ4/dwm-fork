@@ -765,10 +765,12 @@ drawbar(Monitor *m)
 	Client *c;
 
         // Time
-        char date[128];
-        char format[1024];
+        char date[128], ram[16], cpu[16], format[1024];
         format_time(date);
-        sprintf(format, "(%s)Bat:%s%% %s", battery_state("BAT0"), battery_perc("BAT0"), date);
+        //sprintf(cpu, "%s", cpu_perc());
+        sprintf(ram, "%s", ram_perc());
+
+        sprintf(format, "%s%%  %s%%  %s%%%s | %s", ram, "??", battery_perc("BAT0"), battery_state("BAT0"), date);
         tw = TEXTW(format) - lrpad + 2;
         x = m->ww - tw;
 	drw_setscheme(drw, scheme[SchemeNorm]);
