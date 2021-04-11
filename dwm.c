@@ -61,7 +61,7 @@
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
-enum { SchemeNorm, SchemeSel }; /* color schemes */
+enum { SchemeNorm, SchemeSel, SchemeDistro }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
        NetWMWindowTypeDialog, NetClientList, NetLast }; /* EWMH atoms */
@@ -758,7 +758,7 @@ void format_time(char *output){
 void
 drawbar(Monitor *m)
 {
-	int x = 0, w, tw = 0;
+	int x = 0, w, tw = 0, twInfo = 0;
 	int boxs = drw->fonts->h / 9;
 	int boxw = drw->fonts->h / 6 + 2;
 	unsigned int i, occ = 0, urg = 0;
@@ -770,11 +770,11 @@ drawbar(Monitor *m)
         //sprintf(cpu, "%s", cpu_perc());
         sprintf(ram, "%s", ram_perc());
 
-        sprintf(format, "%s%%  %s%%  %s%%%s | %s", ram, "??", battery_perc("BAT0"), battery_state("BAT0"), date);
-        tw = TEXTW(format) - lrpad + 2;
-        x = m->ww - tw;
+        sprintf(format, "%s%%  %s%%  %s%%%s | %s ", ram, "??", battery_perc("BAT0"), battery_state("BAT0"), date);
+        twInfo = TEXTW(format) - lrpad + 2;
+        x = m->ww - twInfo;
 	drw_setscheme(drw, scheme[SchemeNorm]);
-        drw_text(drw, x, 0, tw, bh, 2, format, 0); // 2 pixel padding around text
+        drw_text(drw, x, 0, twInfo, bh, 2, format, 0); // 2 pixel padding around text
 
 	for (c = m->clients; c; c = c->next) {
 		occ |= c->tags;
@@ -792,11 +792,21 @@ drawbar(Monitor *m)
 				urg & 1 << i);
 		x += w;
 	}
+	drw_setscheme(drw, scheme[SchemeNorm]);
+	x = drw_text(drw, x, 0, 2, bh, lrpad / 2, "", 0);
+
+        char distro[128];
+        sprintf(distro, "on: %s ", run_command("cat /etc/os-release | grep \"^NAME=.*\" | sed 's/^.*=//' | sed 's/\"//g'"));
+
+        tw = TEXTW(distro) - lrpad + 2;
+	drw_setscheme(drw, scheme[SchemeDistro]);
+        drw_text(drw, x, 0, tw, bh, 2, distro, 0); // 2 pixel padding around text
+        x += tw;
 
 	drw_setscheme(drw, scheme[SchemeNorm]);
 	x = drw_text(drw, x, 0, 2, bh, lrpad / 2, "", 0);
 
-	if ((w = m->ww - tw - x) > bh) {
+	if ((w = m->ww - twInfo - x) > bh) {
 		if (m->sel) {
 			drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
 			drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);

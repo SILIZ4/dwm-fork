@@ -14,15 +14,21 @@ static const Bool topbar            = True;     /* 0 means bottom bar */
 static const char *fonts[]          = { "fontawesome-regular:size=11", "NotoSans:size=11" };
 static const char dmenufont[]       = "monospace:size=10";
 
-static const char col_gray1[]       = "#222222";
-static const char col_gray2[]       = "#444444";
-static const char col_gray3[]       = "#bbbbbb";
-static const char col_gray4[]       = "#eeeeee";
-static const char col_cyan[]        = "#005577";
+static const char col_gray1[]       = "#222222";  // black
+static const char col_gray2[]       = "#444444";  // dark gray
+static const char col_gray3[]       = "#bbbbbb";  // pale gray
+static const char col_gray4[]       = "#eeeeee";  // white
+//static const char col_cyan[]        = "#005577";
+static const char col_main[]        = "#f2c43a";  // yellow
+static const char col_palebg[]      = "#eadcae";
+static const char col_constrast[]   = "#4ec0c2";  // gray-blue
+
+
 static const char *colors[][3]      = {
-	/*               fg         bg         border   */
-	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
+	/*                 fg             bg           border   */
+	[SchemeNorm]   = { col_palebg,    col_gray1,   col_gray1},
+	[SchemeSel]    = { col_gray1,     col_main,    col_main },
+        [SchemeDistro] = { col_constrast, col_gray1,   col_gray1 }
 };
 
 /* tagging */
@@ -36,6 +42,7 @@ static const Rule rules[] = {
 	/* class      instance    title       tags mask     isfloating   monitor */
 	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
 	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
+	{ "Figure 1", NULL,       NULL,       0,            1,           -1 },
 };
 
 /* layout(s) */
@@ -63,7 +70,7 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_main, "-sf", col_gray4, NULL };
 static const char *roficmd[] = {"rofi", "-modi",  "run", "-show", "run", "-fake-transpacency"};
 static const char *termcmd[]  = { "urxvt", NULL };
 
