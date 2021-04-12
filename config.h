@@ -19,14 +19,14 @@ static const char col_gray2[]       = "#444444";  // dark gray
 static const char col_gray3[]       = "#bbbbbb";  // pale gray
 static const char col_gray4[]       = "#eeeeee";  // white
 //static const char col_cyan[]        = "#005577";
-static const char col_main[]        = "#f2c43a";  // yellow
-static const char col_palebg[]      = "#eadcae";
-static const char col_constrast[]   = "#4ec0c2";  // gray-blue
+static const char col_main[]        = "#f2c43a";  // bright yellow
+static const char col_pale[]        = "#eadcae";  // light yellow
+static const char col_constrast[]   = "#4ec0c2";  // light blue
 
 
 static const char *colors[][3]      = {
 	/*                 fg             bg           border   */
-	[SchemeNorm]   = { col_palebg,    col_gray1,   col_gray1},
+	[SchemeNorm]   = { col_pale,      col_gray1,   col_gray1},
 	[SchemeSel]    = { col_gray1,     col_main,    col_main },
         [SchemeDistro] = { col_constrast, col_gray1,   col_gray1 }
 };
@@ -40,9 +40,8 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
-	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
-	{ "Figure 1", NULL,       NULL,       0,            1,           -1 },
+	{ "Gimp",       NULL,       NULL,       0,            1,           -1 },
+	{ "matplotlib", NULL,       NULL,       0,            1,           -1 }
 };
 
 /* layout(s) */
