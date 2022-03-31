@@ -1,0 +1,3 @@
+pertag
+movestack
+fullscreen

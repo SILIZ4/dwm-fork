@@ -76,8 +76,6 @@ static const char *mutecmd[] = { "amixer", "-D", "pulse", "sset", "Master", "tog
 static const char *volupcmd[] = { "amixer", "-D", "pulse", "sset", "Master", "5%+", NULL };
 static const char *voldowncmd[] = { "amixer", "-D", "pulse", "sset", "Master", "5%-", NULL };
 
-/* additional functions declaration */
-void fullscreen(const Arg *arg);
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -140,3 +138,16 @@ static Button buttons[] = {
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 };
+
+// Additional functions
+Layout *last_layout;
+void fullscreen(const Arg *arg)
+{
+	if (selmon->showbar) {
+		for(last_layout = (Layout *)layouts; last_layout != selmon->lt[selmon->sellt]; last_layout++);
+		setlayout(&((Arg) { .v = &layouts[2] }));
+	} else {
+		setlayout(&((Arg) { .v = last_layout }));
+	}
+	togglebar(arg);
+}
