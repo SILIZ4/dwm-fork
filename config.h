@@ -71,7 +71,10 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_main, "-sf", col_gray4, NULL };
 static const char *roficmd[] = { "rofi", "-modi",  "run", "-show", "run", "-fake-transpacency" };
-static const char *termcmd[]  = { "xfce4-terminal", "--hide-menubar" };
+static const char *termcmd[] = { "xfce4-terminal", "--hide-menubar" };
+
+static const char *fileexplorercmd[] = { "kitty", "-e", "vifm" };
+static const char *volumectlcmd[] = { "pavucontrol" };
 
 static const char *mutecmd[] = { "amixer", "-D", "pulse", "sset", "Master", "toggle", NULL };
 static const char *volupcmd[] = { "amixer", "-D", "pulse", "sset", "Master", "5%+", NULL };
@@ -84,8 +87,7 @@ static const char *voldowncmd[] = { "amixer", "-D", "pulse", "sset", "Master", "
 static Key keys[] = {
 	// Default commands
 	/* modifier                     key        function        argument */
-	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
-	{ MODKEY,                       XK_d,      spawn,          {.v = roficmd } },
+	{ MODKEY,                       XK_p,      spawn,          { .v = dmenucmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
@@ -107,14 +109,19 @@ static Key keys[] = {
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY,                       XK_period, tagmon,         {.i = +1 } },
+
 	// Additional commands
-	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
+	{ MODKEY,                       XK_Return, spawn,          { .v = termcmd } },
+	{ MODKEY,                       XK_d,      spawn,          { .v = roficmd } },
+	{ MODKEY,                       XK_e,      spawn,          { .v = fileexplorercmd } },
+	{ MODKEY,                       XK_n,      spawn,          SHCMD("start-browser") },
+	{ MODKEY,                       XK_v,      spawn,          { .v = volumectlcmd } },
 	{ MODKEY|ShiftMask,             XK_j,      movestack,      {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_k,      movestack,      {.i = -1 } },
 	{ MODKEY,                       XK_f,      fullscreen,     {0} },
-	{ 0,                            XF86XK_AudioMute, spawn,          {.v = mutecmd } },
-	{ 0,                            XF86XK_AudioLowerVolume, spawn,   {.v = voldowncmd } },
-	{ 0,                            XF86XK_AudioRaiseVolume, spawn,   {.v = volupcmd } },
+	{ 0,                            XF86XK_AudioMute, spawn,          { .v = mutecmd } },
+	{ 0,                            XF86XK_AudioLowerVolume, spawn,   { .v = voldowncmd } },
+	{ 0,                            XF86XK_AudioRaiseVolume, spawn,   { .v = volupcmd } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
