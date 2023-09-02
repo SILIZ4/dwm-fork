@@ -48,7 +48,6 @@ static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] 
 static const int nmaster     = 1;    /* number of clients in master area */
 static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
 
-#include "movestack.c"
 static const Layout layouts[] = {
 	/* symbol     arrange function */
 	{ "[]=",      tile },    /* first entry is default */
@@ -83,6 +82,10 @@ static const char *voldowncmd[] = { "amixer", "-D", "pulse", "sset", "Master", "
 
 // Additional functions
 #include "fullscreen.c"
+#include "movestack.c"
+void focus_term(const Arg *arg);
+void focus_browser(const Arg *arg);
+static const char *browser_names[] = {"Brave"};
 
 static Key keys[] = {
 	// Default commands
@@ -112,9 +115,11 @@ static Key keys[] = {
 
 	// Additional commands
 	{ MODKEY,                       XK_Return, spawn,          { .v = termcmd } },
+	{ MODKEY|ControlMask,           XK_Return, focus_term,     {0} },
 	{ MODKEY,                       XK_d,      spawn,          { .v = roficmd } },
 	{ MODKEY,                       XK_e,      spawn,          { .v = fileexplorercmd } },
 	{ MODKEY,                       XK_n,      spawn,          SHCMD("start-browser") },
+	{ MODKEY|ControlMask,           XK_n,      focus_browser,  {0} },
 	{ MODKEY,                       XK_v,      spawn,          { .v = volumectlcmd } },
 	{ MODKEY|ShiftMask,             XK_j,      movestack,      {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_k,      movestack,      {.i = -1 } },

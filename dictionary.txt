@@ -1,0 +1,16 @@
+Vocabulary
+----------
+root: root window = "background" (giant rectangle common to all workspaces)
+client: application (struct with associated data)
+window: client ID
+display: unique even if multiple monitors, what interacts with X
+monitor: monitor
+Arg: union (int/uint/float/void*) for keymaps processing
+
+Global variables
+----------------
+dpy: display
+ev: XEvent
+e: event
+selmon: selected monitor
+mons: first element of monitors linked list

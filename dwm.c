@@ -2240,6 +2240,67 @@ zoom(const Arg *arg)
 	pop(c);
 }
 
+// Additional functions
+void
+focus_client(Monitor* m, Client* c) {
+    // Focus monitor if not selected
+    if (m != selmon) {
+        unfocus(selmon->sel, 1);
+        selmon = m;
+    }
+    // Focus client
+    Arg *ct_ptr = malloc(sizeof(Arg));
+    ct_ptr->ui = c->tags;
+    view(ct_ptr);
+    free(ct_ptr);
+
+    focus(c);
+}
+
+void
+focus_client_name(int (*client_is_name)(Client*)) {
+    Monitor *m;
+    Client *c;
+
+    // Try first with the current monitor
+    if (selmon)
+        for (c = selmon->clients; c; c = c->next)
+            if (client_is_name(c)) {
+                focus_client(selmon, c);
+                return;
+            }
+
+    // Otherwise look in the others
+	for (m = mons; m; m = m->next)
+		for (c = m->clients; c; c = c->next)
+            if (client_is_name(c)) {
+                focus_client(m, c);
+                return;
+            }
+}
+
+int
+is_term(Client *c) {
+    return strstr(c->name, "Terminal") != NULL;
+}
+
+void
+focus_term(const Arg *arg) {
+    focus_client_name(&is_term);
+}
+
+int
+is_browser(Client *c) {
+    for (size_t i = 0; i < sizeof(browser_names) / sizeof(browser_names[0]); i++)
+        if (strstr(c->name, browser_names[i]) != NULL)
+            return 1;
+    return 0;
+}
+
+void focus_browser(const Arg *arg) {
+    focus_client_name(&is_browser);
+}
+
 
 int
 main(int argc, char *argv[])
