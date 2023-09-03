@@ -39,6 +39,7 @@ static const Rule rules[] = {
 	 */
 	/* class        instance    title         tags mask     isfloating   monitor */
     { "matplotlib", NULL,       NULL,         0,            1,           -1  },
+    { NULL,         NULL,       "PySplitter", 0,            1,           -1  },
     { "Soffice",    "soffice",  NULL,         0,            0,           0,  },
     { "Soffice",    "soffice",  "Presenting", 0,            0,           1,  }
 };
