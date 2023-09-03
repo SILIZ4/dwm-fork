@@ -2249,11 +2249,8 @@ focus_client(Monitor* m, Client* c) {
         selmon = m;
     }
     // Focus client
-    Arg *ct_ptr = malloc(sizeof(Arg));
-    ct_ptr->ui = c->tags;
-    view(ct_ptr);
-    free(ct_ptr);
-
+    Arg client_tag = {.ui = c->tags};
+    view(&client_tag);
     focus(c);
 }
 
@@ -2291,14 +2288,39 @@ focus_term(const Arg *arg) {
 
 int
 is_browser(Client *c) {
-    for (size_t i = 0; i < sizeof(browser_names) / sizeof(browser_names[0]); i++)
+    for (size_t i = 0; i < LENGTH(browser_names); i++)
         if (strstr(c->name, browser_names[i]) != NULL)
             return 1;
     return 0;
 }
 
-void focus_browser(const Arg *arg) {
+void
+focus_browser(const Arg *arg) {
     focus_client_name(&is_browser);
+}
+
+void
+transfer_clients(const Arg *arg) {
+    Monitor* next_monitor=selmon->next;
+    if (!next_monitor) {
+        next_monitor = mons;
+        if (next_monitor == selmon)
+            return;
+    }
+
+    for (Client *c = selmon->clients; c; ) {
+        Client *next_c = c->next;
+        unsigned int current_tags = c->tags;
+
+        detach(c);
+        detachstack(c);
+        c->mon = next_monitor;
+        attach(c);
+        attachstack(c);
+        focus(NULL);
+        arrange(NULL);
+        c = next_c;
+    }
 }
 
 

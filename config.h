@@ -86,6 +86,7 @@ static const char *voldowncmd[] = { "amixer", "-D", "pulse", "sset", "Master", "
 #include "movestack.c"
 void focus_term(const Arg *arg);
 void focus_browser(const Arg *arg);
+void transfer_clients(const Arg *arg);
 static const char *browser_names[] = {"Brave"};
 
 static Key keys[] = {
@@ -112,16 +113,17 @@ static Key keys[] = {
 	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
-	{ MODKEY,                       XK_period, tagmon,         {.i = +1 } },
+	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
 
 	// Additional commands
 	{ MODKEY,                       XK_Return, spawn,          { .v = termcmd } },
 	{ MODKEY|ControlMask,           XK_Return, focus_term,     {0} },
-	{ MODKEY,                       XK_d,      spawn,          { .v = roficmd } },
-	{ MODKEY,                       XK_e,      spawn,          { .v = fileexplorercmd } },
 	{ MODKEY,                       XK_n,      spawn,          SHCMD("start-browser") },
 	{ MODKEY|ControlMask,           XK_n,      focus_browser,  {0} },
+	{ MODKEY,                       XK_d,      spawn,          { .v = roficmd } },
+	{ MODKEY,                       XK_e,      spawn,          { .v = fileexplorercmd } },
 	{ MODKEY,                       XK_v,      spawn,          { .v = volumectlcmd } },
+	{ MODKEY,                       XK_c,      transfer_clients,{0} },
 	{ MODKEY|ShiftMask,             XK_j,      movestack,      {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_k,      movestack,      {.i = -1 } },
 	{ MODKEY,                       XK_f,      fullscreen,     {0} },
