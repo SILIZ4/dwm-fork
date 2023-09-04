@@ -7,8 +7,8 @@ static const unsigned int gappx     = 6;        /* gaps between windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const Bool showbar           = True;     /* 0 means no bar */
 static const Bool topbar            = True;     /* 0 means bottom bar */
-static char fonts[2][256]           = { "fontawesome-regular:size=", "NotoSans:size=" };
-static const float rel_fontsize     = 0.05;
+static const char *fonts[]          = { "fontawesome-regular:size=", "NotoSans:size=" };
+static const float rel_fontsize     = 0.02;
 static const char dmenufont[]       = "monospace:size=10";
 
 static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */

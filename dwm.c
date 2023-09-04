@@ -22,6 +22,7 @@
  */
 #include <errno.h>
 #include <locale.h>
+#include <math.h>
 #include <signal.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -134,6 +135,7 @@ struct Monitor {
 	Pertag *pertag;
     Drw *drw;
     int bh, lrpad;
+    char **fonts;
 };
 
 typedef struct {
@@ -496,10 +498,7 @@ cleanup(void)
 			unmanage(m->stack, 0);
 	XUngrabKey(dpy, AnyKey, AnyModifier, root);
 	for (i = 0; i < CurLast; i++)
-        for (Monitor* m=mons; m; m=m->next) {
-            drw_cur_free(m->drw, cursor[i]);
-            drw_free(m->drw);
-        }
+        drw_cur_free(mons->drw, cursor[i]);
 	for (i = 0; i < LENGTH(colors); i++)
 		free(scheme[i]);
 	while (mons)
@@ -522,6 +521,12 @@ cleanupmon(Monitor *mon)
 		for (m = mons; m && m->next != mon; m = m->next);
 		m->next = mon->next;
 	}
+    if (mon->fonts) {
+        for (size_t i=0; i<LENGTH(fonts); i++)
+            free(mon->fonts[i]);
+        free(mon->fonts);
+    }
+    drw_free(mon->drw);
 	XUnmapWindow(dpy, mon->barwin);
 	XDestroyWindow(dpy, mon->barwin);
 	free(mon);
@@ -688,16 +693,24 @@ int numPlaces (int n) {
     return r;
 }
 
-void recompute_fontsize(Monitor* m) {
+void compute_fontsize(Monitor* m) {
     char fontsize_buffer[64];
 
     for (m = mons; m; m = m->next) {
-        for (unsigned int i = 1; i <= LENGTH(fonts); i++) {
-            int fontsize = rel_fontsize*m->my;
-            sprintf(fontsize_buffer, "%d", fontsize);
-            strncat(fonts[i], fontsize_buffer, numPlaces(fontsize));
+        if (!m->fonts) {
+            m->fonts = (char**) malloc(LENGTH(fonts)*sizeof(char*));
+            for (unsigned int i = 0; i < LENGTH(fonts); i++)
+                m->fonts[i] = (char*) malloc(sizeof(char)*256);
         }
-        if (!drw_fontset_create(m->drw, (const char**) fonts, LENGTH(fonts)))
+        for (unsigned int i = 0; i < LENGTH(fonts); i++) {
+            strcpy(m->fonts[i], fonts[i]);
+            int fontsize = round(rel_fontsize*m->mh*.75);
+            if (fontsize<10)
+                fontsize=10;
+            sprintf(fontsize_buffer, "%d", fontsize);
+            strncat(m->fonts[i], fontsize_buffer, numPlaces(fontsize));
+        }
+        if (!drw_fontset_create(m->drw, m->fonts, LENGTH(fonts)))
             die("no fonts could be loaded.");
         m->lrpad = m->drw->fonts->h;
         m->bh = m->drw->fonts->h + 2;
@@ -1661,9 +1674,9 @@ setup(void)
 	netatom[NetWMWindowTypeDialog] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
 	netatom[NetClientList] = XInternAtom(dpy, "_NET_CLIENT_LIST", False);
 	/* init cursors */
-	cursor[CurNormal] = drw_cur_create(mons->drw, XC_left_ptr);
-	cursor[CurResize] = drw_cur_create(mons->drw, XC_sizing);
-	cursor[CurMove] = drw_cur_create(mons->drw, XC_fleur);
+	/*cursor[CurNormal] = drw_cur_create(mons->drw, XC_left_ptr);*/
+	/*cursor[CurResize] = drw_cur_create(mons->drw, XC_sizing);*/
+	/*cursor[CurMove] = drw_cur_create(mons->drw, XC_fleur);*/
 	/* init appearance */
 	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
 	for (i = 0; i < LENGTH(colors); i++)
@@ -1997,8 +2010,15 @@ updategeom(void)
 			for (m = mons; m && m->next; m = m->next);
 			if (m)
 				m->next = createmon();
-			else
+			else {
+                if (mons)
+                    for (i = 0; i < CurLast; i++)
+                        drw_cur_free(mons->drw, cursor[i]);
 				mons = createmon();
+                cursor[CurNormal] = drw_cur_create(mons->drw, XC_left_ptr);
+                cursor[CurResize] = drw_cur_create(mons->drw, XC_sizing);
+                cursor[CurMove] = drw_cur_create(mons->drw, XC_fleur);
+            }
 		}
 		for (i = 0, m = mons; i < nn && m; m = m->next, i++)
 			if (i >= n
@@ -2011,6 +2031,7 @@ updategeom(void)
 				m->my = m->wy = unique[i].y_org;
 				m->mw = m->ww = unique[i].width;
 				m->mh = m->wh = unique[i].height;
+                compute_fontsize(mons);
 				updatebarpos(m);
 			}
 		/* removed monitors if n > nn */
@@ -2038,7 +2059,7 @@ updategeom(void)
 			dirty = 1;
 			mons->mw = mons->ww = sw;
 			mons->mh = mons->wh = sh;
-            recompute_fontsize(mons);
+            compute_fontsize(mons);
 			updatebarpos(mons);
 		}
 	}
